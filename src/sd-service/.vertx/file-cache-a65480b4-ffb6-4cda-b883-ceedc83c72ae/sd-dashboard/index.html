@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Dumpster Dashboard</title>
+
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <style>
+        body{
+            background-color:#2E3442;
+            color: white;
+        }
+        div.row{
+            background-color: #2E3442;
+        }
+        div.state{
+            padding: 5% 15%;
+
+        }
+
+        div.box{
+            border: 7px solid black;
+        }
+
+        #donut{
+          border-left: 0;
+        }
+
+        #chartBox{
+          border-top: 0;
+        }
+
+        #boxTitle{
+          border-bottom: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container" role="main">
+        <div class="row">
+            <div class="col-md-12 text-center box" id="boxTitle">
+                <h1>Smart Dumpster Dashboard</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5 text-center box" style="height: 360px;">
+              <div class="row" style="height: 60px;">
+              </div>
+                <div class="row">
+                    <h3>State: </h3><h3 id="state"></h3>
+                </div>
+                <div class="row">
+                    <h3>Forza Stato del Dumpster</h3>
+                </div>
+                <div class="row state">
+                    <button type="button" class="btn btn-success pull-right state" onclick=setAvailable()>Available</button>
+                    <button type="button" class="btn btn-danger pull-left state" onclick=setNotAvailable()>Not Available</button>
+                </div>
+            </div>
+            <div class="col-md-7  box" id="donut" style="height: 360px;" >
+                <div class="row text-center"><h3>Disponibilità Dumpster</h3></div>
+                <div class="row" id="chartContainer" style="height: 280px;"></div>
+            </div>
+        </div>
+        <div class="row box" id="chartBox">
+          <div class="col-md-12">
+            <div class="row text-center"><h3>Quantità vs Numero Depositi</h3></div>
+            <div class="row "  id="chart" style="height: 360px;">
+            </div>
+          </div>
+        </div>
+</div>
+<script>
+
+window.onload = function () {
+     getStatus();
+
+
+var chart = new CanvasJS.Chart("chart", {
+	animationEnabled: true,
+  backgroundColor: "transparent",
+	axisY: {
+		title: "Quantità in kg",
+		titleFontColor: "#7E858C",
+		lineColor: "#7E858C",
+		labelFontColor: "#7E858C",
+		tickColor: "#7E858C"
+	},
+	axisY2: {
+		title: "Numero Depositi",
+		titleFontColor: "#7E858C",
+		lineColor: "#7E858C",
+		labelFontColor: "#7E858C",
+		tickColor: "#7E858C"
+	},
+	toolTip: {
+		shared: true
+	},
+	legend: {
+    fontColor: "#7E858C",
+    fontSize: 14,
+		cursor:"pointer",
+		itemclick: toggleDataSeries
+	},
+  dataPointWidth: 55,
+	data: [{
+		type: "column",
+        color: "#5252F7",
+		name: "quantità (kg)",
+		legendText: "quantità",
+		showInLegend: true,
+		dataPoints:[
+			{ label: "Saudi", y: 266.21 },
+			{ label: "Venezuela", y: 302.25 },
+			{ label: "Iran", y: 157.20 },
+			{ label: "Iraq", y: 148.77 },
+			{ label: "Kuwait", y: 101.50 },
+			{ label: "UAE", y: 97.8 }
+		]
+	},
+	{
+		type: "column",
+        color: "#00CD9A",
+		name: " numero depositi (unit/day)",
+		legendText: "numero depositi",
+		axisYType: "secondary",
+		showInLegend: true,
+		dataPoints:[
+			{ label: "Saudi", y: 10.46 },
+			{ label: "Venezuela", y: 2.27 },
+			{ label: "Iran", y: 3.99 },
+			{ label: "Iraq", y: 4.45 },
+			{ label: "Kuwait", y: 2.92 },
+			{ label: "UAE", y: 3.1 }
+		]
+	}]
+});
+chart.render();
+updateChart();
+    function toggleDataSeries(e) {
+        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+            e.dataSeries.visible = false;
+        }
+        else {
+            e.dataSeries.visible = true;
+        }
+        chart.render();
+    }
+
+    function updateChart(){
+        $.getJSON("/api/dash/statistics", function(jsonArray){
+            $.each(jsonArray, function(i, json){
+                chart.options.data[0].dataPoints[i].label = json.date;
+                chart.options.data[0].dataPoints[i].y = json.totalWeight;
+                chart.options.data[1].dataPoints[i].label = json.date;
+                chart.options.data[1].dataPoints[i].y = json.nDep;
+
+            });
+            chart.render();
+        });
+    }
+
+    setInterval(function() {updateChart()}, 2500);
+}
+
+    setInterval("getStatus()", 2000);
+    function getStatus(){
+        $.getJSON("/api/dash", function(jObj){
+            if(jObj.state){
+                $("h3#state").text("AVAILABLE");
+                $("h3#state").css("color", "green");
+            }else{
+                $("h3#state").text("NOT_AVAILABLE");
+                $("h3#state").css("color", "red");
+            }
+
+            var chart = createDonutChart(jObj.totalWeight, jObj.availability, jObj.nDeposit);
+            chart.render();             
+        });
+    }
+    function setAvailable() {
+        $.post("/api/dash", "true", function(){
+            getStatus();
+        });
+    }
+
+    function setNotAvailable() {
+        $.post("/api/dash", "false", function(){
+            getStatus();
+        });
+    }
+
+    function createDonutChart(totalWeight, availability, nDeposit){
+        var percentuale = ((availability *100)/(totalWeight+availability)).toFixed(0);
+        return new CanvasJS.Chart("chartContainer", {
+            backgroundColor: "transparent",
+            animationEnabled: false,
+            title:{
+                fontColor: "white",
+                text: percentuale + "%",
+                fontSize: 30,
+                horizontalAlign: "center",
+                verticalAlign: "center"
+            },
+            subtitles:[{
+                fontColor:"white",
+                text: "Numero Depositi: "+ nDeposit,
+                fontSize: 20,
+                fontWeight: "lighter",
+                horizontalAlign: "left",
+            }],
+            legend:{
+                cursor: "pointer",
+                fontColor: "#7E858C",
+                fontSize: 14
+            },
+            data: [{
+                type: "doughnut",
+                showInLegend: true,
+                startAngle: 270,
+                innerRadius: 65,
+                //indexLabelFontSize: 17,
+                //indexLabel: "{label} - #percent%",
+                toolTipContent: "<b>{name}:</b> {y}kg (#percent%)",
+                dataPoints: [
+                    { y: totalWeight, name: "quantità corrente", exploded:true, color: "#B22222"},
+                    { y: availability, name: "disponibilità", color: "lightgray"},
+
+                ]
+            }]
+        });
+    }
+
+
+
+</script>
+</body>
+</html>

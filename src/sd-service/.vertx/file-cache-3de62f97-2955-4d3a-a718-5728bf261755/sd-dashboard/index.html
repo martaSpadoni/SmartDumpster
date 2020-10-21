@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Dumpster Dashboard</title>
+
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <style>
+        body{
+            background-color:#2E3442;
+            color: white;
+        }
+        .container{
+            background-color: black;
+        }
+        div.row{
+            background-color: #2E3442;
+        }
+        div.state{
+            padding: 5%;
+        }
+
+        div.box{
+            margin: 2%;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container" role="main">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Smart Dumpster Dashboard</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 text-center box" style="height: 362px;">
+                <div class="row">
+                    <h3>State: </h3><h3 id="state"></h3>
+                </div>
+                <div class="row">
+                    <h3>Forza Stato del Dumpster</h3>
+                </div>
+                <div class="row state" style="border: 50px 0;">
+                    <button type="button" class="btn btn-success pull-right state" onclick=setAvailable()>Available</button>
+                    <button type="button" class="btn btn-danger pull-left state" onclick=setNotAvailable()>Not Available</button>
+                </div>
+            </div>
+            <div class="col-md-8 box"  >
+                <div class="row text-center"><h3>Disponibilità Dumpster</h3></div>
+                <div class="row" id="chartContainer" style="height: 300px;"></div>
+            </div>
+        </div>
+</div>
+<script>
+
+window.onload = function () {
+    getStatus();
+var chart = new CanvasJS.Chart("chartContainer", {
+    backgroundColor: "transparent",
+	animationEnabled: true,
+	title:{
+        fontColor: "white",
+		text: "100%",
+        fontSize: 40,
+		horizontalAlign: "center",
+        verticalAlign: "center"
+	},
+    legend:{
+        cursor: "pointer",
+        fontColor: "white",
+        fontSize: 20
+    },
+	data: [{
+		type: "doughnut",
+        showInLegend: true,
+		startAngle: 270,
+		innerRadius: 65,
+		//indexLabelFontSize: 17,
+		//indexLabel: "{label} - #percent%",
+		toolTipContent: "<b>{name}:</b> {y} (#percent%)",
+		dataPoints: [
+			{ y: 67, name: "quantità corrente", exploded:true, color: "#B22222"},
+			{ y: 28, name: "disponibilità", color: "lightgray"},
+			
+		]
+	}]
+});
+chart.render();
+
+}
+
+    setInterval("getStatus()", 2000);
+    function getStatus(){
+        $.get("/api/dash", function(data, status){
+                if(data != "NOT_AVAILABLE"){
+                    $("h3#state").text("AVAILABLE");
+                    $("h3#state").css("color", "green");
+                }else{
+                    $("h3#state").text("NOT_AVAILABLE");
+                    $("h3#state").css("color", "red");
+                }
+            });
+    }
+    function setAvailable() {
+        $.post("/api/dash", "true", function(){
+            getStatus();
+        });
+    }
+
+    function setNotAvailable() {
+        $.post("/api/dash", "false", function(){
+            getStatus();
+        });
+    }
+
+</script>
+</body>
+</html>

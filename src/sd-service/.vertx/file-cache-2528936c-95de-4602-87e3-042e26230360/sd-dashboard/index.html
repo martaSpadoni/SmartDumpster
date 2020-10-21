@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Dumpster Dashboard</title>
+
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</head>
+<body>
+<div class="container" role="main">
+    <div class="jumbotron text-center" style="height: 150px;">
+        <h1>Smart Dumpster Dashboard</h1>
+    </div>
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-4">
+                <button class="pull-right btn btn-success" onclick=setAvailable()>
+                     Available
+                </button>
+                <button class="pull-left btn btn-danger" onclick=setNotAvailable()>
+                    Not Available
+                </button>
+                <div class="state row" style="background-color: blue;"></div>
+            </div>
+            <div class="col-md-8"  >
+                <div class="row text-center"><h1>Disponibilità Dumpster</h1></div>
+                <div class="row" id="chartContainer" style="height: 300px;"></div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title:{
+		text: "100%",
+        fontSize: 40,
+		horizontalAlign: "center",
+        verticalAlign: "center"
+	},
+    legend:{
+        cursor: "pointer"
+    },
+	data: [{
+		type: "doughnut",
+        showInLegend: true,
+		startAngle: 270,
+		innerRadius: 65,
+		//indexLabelFontSize: 17,
+		//indexLabel: "{label} - #percent%",
+		toolTipContent: "<b>{name}:</b> {y} (#percent%)",
+		dataPoints: [
+			{ y: 67, name: "quantità corrente", exploded:true, color: "#B22222"},
+			{ y: 28, name: "disponibilità", color: "lightgray"},
+			
+		]
+	}]
+});
+chart.render();
+
+}
+
+    setInterval("getStatus()", 2000);
+    function getStatus(){
+        $.get("/api/dash", function(data, status){
+                if(data != "NOT_AVAILABLE"){
+                    $("div.state").css("background-color", "green");
+                }else{
+                    $("div.state").css("background-color", "red");
+                }
+            });
+    }
+    function setAvailable() {
+        $.post("/api/dash", "true", function(){
+            getStatus();
+        });
+    }
+
+    function setNotAvailable() {
+        $.post("/api/dash", "false", function(){
+            getStatus();
+        });
+    }
+
+</script>
+</body>
+</html>

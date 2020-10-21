@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="res"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/Desktop/Sistemi Embedded/Progetti/sistemiembedded/Progetto-03/src/sd-service/lib/jackson-annotations-2.9.7.jar"/>
+	<classpathentry kind="lib" path="D:/Desktop/Sistemi Embedded/Progetti/sistemiembedded/Progetto-03/src/sd-service/lib/jackson-core-2.9.7.jar"/>
+	<classpathentry kind="lib" path="D:/Desktop/Sistemi Embedded/Progetti/sistemiembedded/Progetto-03/src/sd-service/lib/jackson-databind-2.9.7.jar"/>
+	<classpathentry kind="lib" path="D:/Desktop/Sistemi Embedded/Progetti/sistemiembedded/Progetto-03/src/sd-service/lib/jssc.jar"/>
+	<classpathentry kind="lib" path="D:/Desktop/Sistemi Embedded/Progetti/sistemiembedded/Progetto-03/src/sd-service/lib/netty-all-4.1.31.Final.jar"/>
+	<classpathentry kind="lib" path="D:/Desktop/Sistemi Embedded/Progetti/sistemiembedded/Progetto-03/src/sd-service/lib/vertx-core-3.5.4.jar"/>
+	<classpathentry kind="lib" path="D:/Desktop/Sistemi Embedded/Progetti/sistemiembedded/Progetto-03/src/sd-service/lib/vertx-web-3.5.4.jar"/>
+	<classpathentry kind="lib" path="D:/Desktop/Sistemi Embedded/Progetti/sistemiembedded/Progetto-03/src/sd-service/lib/vertx-web-client-3.5.4.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

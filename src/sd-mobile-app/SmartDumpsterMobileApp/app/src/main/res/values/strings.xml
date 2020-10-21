@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Smart Dumpster</string>
+    <string name="a">A</string>
+    <string name="b">B</string>
+    <string name="c">C</string>
+    <string name="time">EXTRA TIME</string>
+    <string name="smart_dumpster">Smart Dumpster</string>
+    <string name="nuovo_deposito">New Deposit</string>
+    <string name="deposit_done">Deposit registered successfully</string>
+    <string name="request_wifi">This app needs Wifi, please enable it to continue</string>
+    <string name="request_bt">This app needs Bluetooth, please enable it to continue</string>
+    <string name="request_token">Token Request</string>
+    <string name="sm_not_working">Smart Dumpster Service is not working, try again?</string>
+    <string name="sm_not_available">Smart Dumpster not available</string>
+    <string name="try_later">Please try Later</string>
+    <string name="sm_connected">Connected to Dumpster\nchoose the type of waste:</string>
+</resources>

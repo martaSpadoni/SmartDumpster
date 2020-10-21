@@ -1,0 +1,3 @@
+rootProject.name='SmartDumpsterMobileApp'
+include ':app', ':btLib'
+project(':btLib').projectDir = new File('bt-lib')
